@@ -5,6 +5,12 @@ on:
     tags:
       - "v*.*.*" # This will trigger whenever a tag like v1.0.0 is applied to the commit
 
+# Setting the dotnet install directory environment variable keeps
+# the dotnet installations within the action workflow's directory, which
+# helps it avoid any user permissions issues if the action workflow service
+# is not granted administrator rights to write to files outside of its' own directory.
+# This also helps keep dotnet installations from leaking outside of our action workflow
+# and being used by programs other than our workflow.
 env:
     DOTNET_INSTALL_DIR: '${{ github.workspace }}\.dotnet'
 

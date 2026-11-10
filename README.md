@@ -1,8 +1,9 @@
 # Azure Workflow Examples
 This is a tutorial/example repository documenting the process of using Azure actions in GitHub action workflows.
 
-# Code-Signing
-Using an Azure certificate in order to automatically sign code for release builds within GitHub action workflows.
+## Code-Signing
+Using an Azure certificate in order to automatically sign code for release builds within GitHub action workflows.  
+[Here's an example .yml file](.github/workflows/azure-codesign-on-tag.yml)
 
 ## Prerequisites
 1. A certificate on Azure
@@ -15,7 +16,7 @@ Using an Azure certificate in order to automatically sign code for release build
     5. Certificate profile name
     6. Signing endpoint
 
-## GitHub Setup
+### GitHub Setup
 Repositories created before July 15th, 2026 must opt in to using immutable IDs in the subject claim:
 
 1. On the repository, navigate to Settings -> Actions -> OIDC
@@ -28,14 +29,14 @@ Depending on what triggers your GitHub actions workflow it must match the setup 
 
 Please see .github/workflows for example workflow yml files!
 
-### Working around Wildcard Tag Triggers
+#### Working around Wildcard Tag Triggers
 You can keep wildcard tags as triggers for your GitHub actions workflow by using an **environment**.  
 
 1. On your GitHub repo under `Settings -> Environments`, create a new environment and note the name. 
 2. Add your Azure secrets under #3 for prerequisites to this new environment.
 3. Use this scoped environment in your GitHub actions workflow yml file. See examples.
 
-## Azure Setup
+### Azure Setup
 A Federated Credential must be set up, with the following settings:
 
 1. Federated Credential Scenario: GitHub Actions deploying Azure resources
@@ -49,8 +50,8 @@ A Federated Credential must be set up, with the following settings:
 7. The next field will be dependant on the Entity type, and it will be the name or term of your Entity, i.e.: your trigger is on the `Release` tag, Entity type will be `Tag` and this field will be `Release`
 
 
-## Funky Self-Hosted Runner Nonsense
-Self-hosted runners can come with all sorts of caveats, which I've decided to note.
+### Funky Self-Hosted Runner Nonsense
+Self-hosted runners can come with all sorts of caveats, which I've decided to note. The [setup-windows-self-hosted.ps1](setup-windows-self-hosted.ps1) file can also be ran on the host machine which takes care of these issues.
 
 1. When using any of the official Azure GitHub actions workflow steps, the self-hosted machine must have the Azure CLI installed. If it was installed while the actions-runner service was still running, it must be restarted before the `az` alias becomes available to your workflows.
 2. Self-hosted runners on Windows can have issues with all sorts of stuff surrounding long filepaths -- you can enable long filepaths on Windows systems using this Powershell command (which can also be a GitHub actions workflow step)

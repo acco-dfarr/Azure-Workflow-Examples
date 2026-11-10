@@ -1,0 +1,74 @@
+name: Post-setup a Self-Hosted Runner
+
+on: deployment
+
+# Setting the dotnet install directory environment variable keeps
+# the dotnet installations within the action workflow's directory, which
+# helps it avoid any user permissions issues if the action workflow service
+# is not granted administrator rights to write to files outside of its' own directory.
+# This also helps keep dotnet installations from leaking outside of our action workflow
+# and being used by programs other than our workflow.
+env:
+    DOTNET_INSTALL_DIR: '${{ github.workspace }}\.dotnet'
+
+# These permissions are required for the Azure artifact signing step
+permissions:
+  id-token: write
+  contents: write # You do not need write permissions unless you want to publish to the releases tab, which is what this example does -- instead use read
+
+jobs:
+  build:
+    # Uses a GitHub hosted runner
+    runs-on: windows-latest
+    environment: Production # Adding an environment is necessary, since you cannot use a wildcard tag trigger with the Azure artifact signing step
+
+    steps:    
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Install .NET version(s) needed. Note that modern versions of Windows come with .net4.7
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Publish solution for Windows x64
+      run: dotnet publish -c Release -r win-x64 --self-contained true -o ./publish --no-restore
+        
+    # Login with Azure in order to digitally sign the new build -- secrets must be defined under the "Production"
+    # environment under the repo's settings
+    - name: Azure login
+      uses: azure/login@v3
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    # Digitally sign the new build
+    - name: Sign files with Artifact Signing
+      uses: azure/artifact-signing-action@v2
+      with:
+        endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+        signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+        certificate-profile-name: ${{ secrets.AZURE_CERTIFICATE_PROFILE }}
+        files-folder: publish
+        files-folder-filter: exe,dll # You can just sign the exe file if you don't need to be safe from strong corporate antiviruses
+        file-digest: SHA256
+        timestamp-rfc3161: http://timestamp.acs.microsoft.com
+        timestamp-digest: SHA256
+    
+    # Zips the build into one folder -- you can change the filename that gets published here
+    # for this example, the filename will be Releases_ + the tag that triggered the workflow (v*.*.*)
+    - name: Zip Artifacts
+      run: |
+        cd publish
+        zip -r ../Releases_${{ github.ref_name }}.zip .
+        
+    # Adds the zipped artifact to the releases tab on the GitHub repository
+    - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Releases_${{ github.ref_name }}.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
