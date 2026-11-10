@@ -8,12 +8,12 @@ Using an Azure certificate in order to automatically sign code for release build
 1. A certificate on Azure
 2. A certificate signing profile
 3. Azure variables/secrets:
-  - Client ID
-  - Tenant ID
-  - Subscription ID
-  - Signing account name
-  - Certificate profile name
-  - Signing endpoint
+    1. Client ID
+    2. Tenant ID
+    3. Subscription ID
+    4. Signing account name
+    5. Certificate profile name
+    6. Signing endpoint
 
 ## GitHub Setup
 Repositories created before July 15th, 2026 must opt in to using immutable IDs in the subject claim:
@@ -38,15 +38,15 @@ You can keep wildcard tags as triggers for your GitHub actions workflow by using
 ## Azure Setup
 A Federated Credential must be set up, with the following settings:
 
-- Federated Credential Scenario: GitHub Actions deploying Azure resources
-- Organization: (your GitHub organization name -- ex. accoes, refer to step GitHub Setup #3)
-- Organization ID: (organization's id -- refer to step GitHub Setup #3)
-- Repository: (your repository's name -- case sensitive)
-- Repository ID: (your repository's ID -- refer to step GitHub Setup #3)
-- Entity type:
-  - This must match your GitHub workflow trigger -- if your `on:` trigger is something like `push` then set Entity type to `Branch`
-  - If you use a non-wildcard tag like `Release`, set Entity type to `Tag`
-- The next field will be dependant on the Entity type, and it will be the name or term of your Entity, i.e.: your trigger is on the `Release` tag, Entity type will be `Tag` and this field will be `Release`
+1. Federated Credential Scenario: GitHub Actions deploying Azure resources
+2. Organization: (your GitHub organization name -- ex. accoes, refer to step GitHub Setup #3)
+3. Organization ID: (organization's id -- refer to step GitHub Setup #3)
+4. Repository: (your repository's name -- case sensitive)
+5. Repository ID: (your repository's ID -- refer to step GitHub Setup #3)
+6. Entity type:
+    1. This must match your GitHub workflow trigger -- if your `on:` trigger is something like `push` then set Entity type to `Branch`
+    2. If you use a non-wildcard tag like `Release`, set Entity type to `Tag`
+7. The next field will be dependant on the Entity type, and it will be the name or term of your Entity, i.e.: your trigger is on the `Release` tag, Entity type will be `Tag` and this field will be `Release`
 
 
 ## Funky Self-Hosted Runner Nonsense
