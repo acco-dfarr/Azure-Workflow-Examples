@@ -69,9 +69,9 @@ jobs:
         
     # Adds the zipped artifact to the releases tab on the GitHub repository
     - name: Create release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: Releases_${{ github.ref_name }}.zip
-          draft: false
-          prerelease: false
-          generate_release_notes: true
+      uses: softprops/action-gh-release@v2
+      with:
+        files: Releases_${{ github.ref_name }}.zip
+        draft: false
+        prerelease: false
+        generate_release_notes: true
