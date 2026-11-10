@@ -5,7 +5,7 @@ This is a tutorial/example repository documenting the process of using Azure act
 Using an Azure certificate in order to automatically sign code for release builds within GitHub action workflows.  
 [Here's an example .yml file](.github/workflows/azure-codesign-on-tag.yml)
 
-## Prerequisites
+### Prerequisites
 1. A certificate on Azure
 2. A certificate signing profile
 3. Azure variables/secrets:
@@ -29,12 +29,12 @@ Depending on what triggers your GitHub actions workflow it must match the setup 
 
 Please see .github/workflows for example workflow yml files!
 
-#### Working around Wildcard Tag Triggers
+#### Working around wildcard tag triggers
 You can keep wildcard tags as triggers for your GitHub actions workflow by using an **environment**.  
 
 1. On your GitHub repo under `Settings -> Environments`, create a new environment and note the name. 
-2. Add your Azure secrets under #3 for prerequisites to this new environment.
-3. Use this scoped environment in your GitHub actions workflow yml file. See examples.
+2. Add your Azure secrets under prerequisites #3 to this new environment.
+3. Use this scoped environment in your GitHub actions workflow yml file. See [example](.github/workflows/azure-codesign-on-tag.yml).
 
 ### Azure Setup
 A Federated Credential must be set up, with the following settings:
